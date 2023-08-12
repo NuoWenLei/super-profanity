@@ -86,8 +86,6 @@ function profanity(text, options = {}) {
   possibilities.forEach((possibility) => {
     const language = possibility.lang; // Return the language as iso2 format
 
-    console.log(possibility)
-
     if (result !== undefined && result !== false) return; // Prevents result from being rewritten.
 
     if (profanityJson[language] && !options.hideInformation) {
