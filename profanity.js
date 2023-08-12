@@ -33,7 +33,7 @@ const path = require("path");
 const { detectAll } = require("tinyld");
 const { NoSwearing } = require(path.resolve(
   __dirname,
-  "./custom_module/noswearing"
+  "./dist/custom_module/noswearing"
 ));
 
 /** @let {string} - Default language used to detect bad words. */
@@ -41,7 +41,7 @@ let mainLanguage = "en";
 
 const profanityJson = JSON.parse(
   require("fs").readFileSync(
-    path.resolve(__dirname, "./profanity_words.json"),
+    path.resolve(__dirname, "./dist/profanity_words.json"),
     "utf8"
   )
 );
@@ -135,7 +135,7 @@ function profanity(text, options = {}) {
 
 async function updateProfanityJson(logMessage) {
   fs.writeFile(
-    path.resolve(__dirname, "./profanity_words.json"),
+    path.resolve(__dirname, "./dist/profanity_words.json"),
     JSON.stringify(profanityJson, null, 2)
   )
     .then(() => {
