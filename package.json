@@ -29,7 +29,7 @@
     "url": "https://github.com/Gasegamer/super-profanity/issues"
   },
   "dependencies": {
-    "noswearing": "^1.2.0",
+    "noswearing": "https://github.com/NuoWenLei/NoSwearingPlease",
     "tinyld": "1.2.0"
   },
   "engines": {

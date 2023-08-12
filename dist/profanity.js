@@ -27,24 +27,13 @@
  * limitations under the License.
  */
 
-const fs = require("fs").promises;
-const path = require("path");
-
 const { detectAll } = require("tinyld");
-const { NoSwearing } = require(path.resolve(
-  __dirname,
-  "./custom_module/noswearing"
-));
 
 /** @let {string} - Default language used to detect bad words. */
 let mainLanguage = "en";
 
-const profanityJson = JSON.parse(
-  require("fs").readFileSync(
-    path.resolve(__dirname, "./profanity_words.json"),
-    "utf8"
-  )
-);
+const profanityJson = require("./profanity_words.json");
+const { NoSwearing } = require("noswearing");
 
 /**
  * Detect bad word based on the detected language
@@ -92,8 +81,12 @@ function profanity(text, options = {}) {
 
   let result;
 
-  detectAll(text).forEach((possibility) => {
-    language = possibility.lang; // Return the language as iso2 format
+  const possibilities = detectAll(text);
+
+  possibilities.forEach((possibility) => {
+    const language = possibility.lang; // Return the language as iso2 format
+
+    console.log(possibility)
 
     if (result !== undefined && result !== false) return; // Prevents result from being rewritten.
 
@@ -133,62 +126,6 @@ function profanity(text, options = {}) {
   }
 }
 
-async function updateProfanityJson(logMessage) {
-  fs.writeFile(
-    path.resolve(__dirname, "./profanity_words.json"),
-    JSON.stringify(profanityJson, null, 2)
-  )
-    .then(() => {
-      console.log(logMessage);
-    })
-    .catch((er) => {
-      console.error(er);
-    });
-}
-
-/**
- * Whitelist a word in a specific language.
- *
- * @param {string} word - Word wished to whitelist.
- * @param {string} language - Language, in ISO2 format, where the word will be whitelisted.
- */
-function whitelistWord(word, language = mainLanguage) {
-  let languageProfanityWords = profanityJson[language];
-  languageProfanityWords[word] = 0;
-
-  return updateProfanityJson(`${word} whitelisted at ${language}.`);
-}
-
-/**
- * Blacklist a word in a specific language.
- *
- * @param {string} word - Word wished to blacklist.
- * @param {string} language - Language, in ISO2 format, where the word will be blacklisted.
- */
-function blacklistWord(word, language = mainLanguage) {
-  let languageProfanityWords = profanityJson[language];
-  languageProfanityWords[word] = 2;
-
-  return updateProfanityJson(`${word} blacklisted at ${language}.`);
-}
-
-/**
- * Remove a word in a specific language.
- *
- * @param {string} word - Word wished to remove.
- * @param {string} language - Language, in ISO2 format, where the word will be removed.
- */
-function removeWord(word, language = mainLanguage) {
-  let languageProfanityWords = profanityJson[language];
-
-  if (languageProfanityWords[word] !== undefined) {
-    delete languageProfanityWords[word];
-    return updateProfanityJson(`${word} removed from ${language}.`);
-  } else {
-    return `${word} not found.`;
-  }
-}
-
 /**
  * Change main language.
  * @param {string} newLang - Language, in ISO2 format, desired to be the new main language.
@@ -203,7 +140,4 @@ function changeMainLanguage(newLang){
 module.exports = {
   profanity,
   changeMainLanguage,
-  whitelistWord,
-  blacklistWord,
-  removeWord,
 };
